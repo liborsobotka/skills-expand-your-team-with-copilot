@@ -519,6 +519,11 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
+    const shareText = encodeURIComponent(
+      `Check out "${name}" at Mergington High School! ${details.description} Schedule: ${formattedSchedule}`
+    );
+    const shareUrl = encodeURIComponent(window.location.href);
+
     activityCard.innerHTML = `
       ${tagHtml}
       <h4>${name}</h4>
@@ -569,6 +574,29 @@ document.addEventListener("DOMContentLoaded", () => {
         `
         }
       </div>
+      <div class="share-buttons">
+        <span class="share-label">Share:</span>
+        <a class="share-btn share-twitter tooltip" href="https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}" target="_blank" rel="noopener noreferrer" aria-label="Share on X (Twitter)">
+          𝕏
+          <span class="tooltip-text">Share on X (Twitter)</span>
+        </a>
+        <a class="share-btn share-facebook tooltip" href="https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${shareText}" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">
+          f
+          <span class="tooltip-text">Share on Facebook</span>
+        </a>
+        <a class="share-btn share-whatsapp tooltip" href="https://wa.me/?text=${shareText}%20${shareUrl}" target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp">
+          💬
+          <span class="tooltip-text">Share on WhatsApp</span>
+        </a>
+        <a class="share-btn share-email tooltip" href="mailto:?subject=${encodeURIComponent(`Activity: ${name}`)}&body=${shareText}" aria-label="Share via Email">
+          ✉
+          <span class="tooltip-text">Share via Email</span>
+        </a>
+        <button class="share-btn share-copy tooltip" data-share-text="${name} - ${details.description} | Schedule: ${formattedSchedule}" aria-label="Copy activity information">
+          🔗
+          <span class="tooltip-text">Copy to clipboard</span>
+        </button>
+      </div>
     `;
 
     // Add click handlers for delete buttons
@@ -585,6 +613,19 @@ document.addEventListener("DOMContentLoaded", () => {
           openRegistrationModal(name);
         });
       }
+    }
+
+    // Add click handler for copy-to-clipboard share button
+    const copyButton = activityCard.querySelector(".share-copy");
+    if (copyButton) {
+      copyButton.addEventListener("click", () => {
+        const text = copyButton.dataset.shareText;
+        navigator.clipboard.writeText(text).then(() => {
+          showMessage("Activity info copied to clipboard!", "success");
+        }).catch(() => {
+          showMessage("Could not copy to clipboard.", "error");
+        });
+      });
     }
 
     activitiesList.appendChild(activityCard);
